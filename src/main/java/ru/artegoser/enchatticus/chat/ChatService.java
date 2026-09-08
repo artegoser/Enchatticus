@@ -6,6 +6,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.PlayerChatMessage;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import ru.artegoser.enchatticus.Enchatticus;
 import ru.artegoser.enchatticus.config.ConfigManager;
@@ -96,10 +97,11 @@ public final class ChatService {
             "message", LegacyComponentFormatter.Value.plain(content)
         ));
 
-        sender.getServer().sendSystemMessage(rendered);
+        MinecraftServer server = sender.level().getServer();
+        server.sendSystemMessage(rendered);
 
         double radiusSquared = config.chat.localRadius * config.chat.localRadius;
-        for (ServerPlayer receiver : sender.getServer().getPlayerList().getPlayers()) {
+        for (ServerPlayer receiver : server.getPlayerList().getPlayers()) {
             if (global) {
                 if (!config.chat.globalAcrossDimensions && receiver.level() != sender.level()) {
                     continue;
