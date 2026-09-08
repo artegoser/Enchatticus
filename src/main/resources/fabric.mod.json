@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "enchatticus",
+  "version": "${version}",
+  "name": "Enchatticus",
+  "description": "Configurable local/global server chat with LuckPerms prefixes.",
+  "authors": [
+    "artegoser"
+  ],
+  "license": "CC0-1.0",
+  "icon": "assets/enchatticus/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "ru.artegoser.enchatticus.Enchatticus"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "luckperms": "*"
+  }
+}

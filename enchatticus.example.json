@@ -1,0 +1,17 @@
+{
+  "chat": {
+    "localRadius": 64.0,
+    "globalTrigger": "!",
+    "globalAcrossDimensions": true,
+    "localPrefix": "&8[Л] &r",
+    "globalPrefix": "&6[Г] &r",
+    "localFormat": "{channel}{prefix}{name}{suffix}&7: &f{message}",
+    "globalFormat": "{channel}{prefix}{name}{suffix}&7: &f{message}",
+    "localMeFormat": "{channel}* {prefix}{name}{suffix} &7{message}",
+    "globalMeFormat": "{channel}* {prefix}{name}{suffix} &f{message}"
+  },
+  "luckPerms": {
+    "usePrefix": true,
+    "useSuffix": false
+  }
+}
