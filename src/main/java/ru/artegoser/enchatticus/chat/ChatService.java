@@ -9,9 +9,12 @@ import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import ru.artegoser.enchatticus.Enchatticus;
+import ru.artegoser.enchatticus.badge.BadgeService;
 import ru.artegoser.enchatticus.config.ConfigManager;
 import ru.artegoser.enchatticus.config.EnchatticusConfig;
 import ru.artegoser.enchatticus.integration.LuckPermsBridge;
+import ru.artegoser.enchatticus.permission.PermissionService;
+import ru.artegoser.enchatticus.tab.TabService;
 
 import java.util.Map;
 
@@ -28,10 +31,11 @@ public final class ChatService {
 
         CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, selection) ->
             dispatcher.register(Commands.literal("enchatticus")
-                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .requires(source -> PermissionService.canReload(source, configManager.get()))
                 .then(Commands.literal("reload").executes(context -> {
                     boolean ok = configManager.load();
                     if (ok) {
+                        TabService.refreshAll(context.getSource().getServer());
                         context.getSource().sendSuccess(
                             () -> Component.literal("Enchatticus config reloaded: " + configManager.path()),
                             false
@@ -79,7 +83,21 @@ public final class ChatService {
             return;
         }
 
+        if (emote && !PermissionService.canUseMe(sender, config)) {
+            deny(sender, config.permissions.me);
+            return;
+        }
+        if (global && !PermissionService.canUseGlobal(sender, config)) {
+            deny(sender, config.permissions.globalChat);
+            return;
+        }
+        if (!global && !PermissionService.canUseLocal(sender, config)) {
+            deny(sender, config.permissions.localChat);
+            return;
+        }
+
         LuckPermsBridge.Meta meta = LuckPermsBridge.meta(sender, config);
+        Component badges = BadgeService.render(sender, config, false);
         String template;
         if (emote) {
             template = global ? config.chat.globalMeFormat : config.chat.localMeFormat;
@@ -91,6 +109,7 @@ public final class ChatService {
 
         Component rendered = LegacyComponentFormatter.format(template, Map.of(
             "channel", LegacyComponentFormatter.Value.formatted(channelPrefix),
+            "badges", LegacyComponentFormatter.Value.component(badges),
             "prefix", LegacyComponentFormatter.Value.formatted(meta.prefix()),
             "suffix", LegacyComponentFormatter.Value.formatted(meta.suffix()),
             "name", LegacyComponentFormatter.Value.plain(sender.getPlainTextName()),
@@ -119,5 +138,9 @@ public final class ChatService {
         }
 
         Enchatticus.LOGGER.debug("{} chat from {}: {}", global ? "Global" : "Local", sender.getPlainTextName(), content);
+    }
+
+    private static void deny(ServerPlayer player, String permission) {
+        player.sendSystemMessage(Component.literal("Недостаточно прав: " + permission));
     }
 }

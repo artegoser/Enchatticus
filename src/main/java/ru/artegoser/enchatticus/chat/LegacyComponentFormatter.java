@@ -7,24 +7,28 @@ import net.minecraft.network.chat.Style;
 
 import java.util.Map;
 
-final class LegacyComponentFormatter {
+public final class LegacyComponentFormatter {
     private LegacyComponentFormatter() {
     }
 
-    static Component format(String template, Map<String, Value> values) {
+    public static Component format(String template, Map<String, Value> values) {
         MutableComponent root = Component.empty();
         Parser parser = new Parser(root, Style.EMPTY, values);
         parser.parse(template == null ? "" : template, true);
         return root;
     }
 
-    record Value(String text, boolean allowFormatting) {
-        static Value plain(String text) {
-            return new Value(text == null ? "" : text, false);
+    public record Value(String text, boolean allowFormatting, Component component) {
+        public static Value plain(String text) {
+            return new Value(text == null ? "" : text, false, null);
         }
 
-        static Value formatted(String text) {
-            return new Value(text == null ? "" : text, true);
+        public static Value formatted(String text) {
+            return new Value(text == null ? "" : text, true, null);
+        }
+
+        public static Value component(Component component) {
+            return new Value("", false, component == null ? Component.empty() : component);
         }
     }
 
@@ -83,7 +87,9 @@ final class LegacyComponentFormatter {
                         Value value = values.get(key);
                         if (value != null) {
                             flush();
-                            if (value.allowFormatting()) {
+                            if (value.component() != null) {
+                                root.append(value.component());
+                            } else if (value.allowFormatting()) {
                                 parse(value.text(), false);
                             } else if (!value.text().isEmpty()) {
                                 root.append(Component.literal(value.text()).setStyle(style));
