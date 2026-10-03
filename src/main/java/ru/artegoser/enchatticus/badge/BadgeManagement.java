@@ -18,16 +18,18 @@ public final class BadgeManagement {
         chatVisibility = filter == null ? (player, id) -> true : filter;
     }
     public boolean eligible(ServerPlayer player, String id) {
-        return Enchatticus.configManager().get().badges.stream().anyMatch(badge ->
-                badge.id.equals(id) && customizable(player, badge));
+        return eligible(player, id, "enchatticus.badges.customize." + id);
     }
-    private static boolean customizable(ServerPlayer player, EnchatticusConfig.Badge badge) {
-        return BadgeCustomizationPolicy.permits(badge, () -> BadgeService.isActive(player, badge),
-                permission -> LuckPermsBridge.hasPermission(player, permission, false));
+    public boolean eligible(ServerPlayer player, String id, String defaultPermission) {
+        return Enchatticus.configManager().get().badges.stream().anyMatch(badge ->
+                badge.id.equals(id) && BadgeCustomizationPolicy.permits(badge,
+                        () -> BadgeService.isActive(player, badge),
+                        permission -> LuckPermsBridge.hasPermission(player, permission, false), defaultPermission));
     }
     public List<BadgeDefinition> list(ServerPlayer player, boolean administrative) {
         return Enchatticus.configManager().get().badges.stream()
-                .filter(badge -> administrative || customizable(player, badge))
+                .filter(badge -> BadgeCustomizationPolicy.visibleInListing(badge, administrative,
+                        () -> BadgeService.isActive(player, badge)))
                 .map(BadgeManagement::definition).toList();
     }
     public void upsert(BadgeDefinition definition) throws IOException {

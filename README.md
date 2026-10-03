@@ -172,17 +172,15 @@ Requires Java 25 and Fabric Loader 0.19.3 or newer.
 
 The remapped JAR is written to `build/libs/`.
 
-## Cosmeticum integration
+## Badge API
 
-Enchatticus retains chat formatting, channels, LuckPerms eligibility, badge
-rendering and TAB configuration. Optional `enchatticus:badges_v2` API allows
-Cosmeticum to edit chat badge definitions and filter chat visibility per player.
-The visibility filter never affects TAB. Existing badges keep `showInTab`;
-new badges created through this API default to chat-only. Configuration edits
-are atomic and published to the running server only after persistence succeeds.
+The optional `enchatticus:badges_v3` Fabric entrypoint exposes badge definitions
+and per-player chat visibility filters. Chat formatting and TAB rendering remain
+owned by Enchatticus; the API has no UI dependency.
 
-Player controls are opt-in per badge: set `customizable: true` and grant the
-configured `customizePermission` (empty uses `cosmeticum.badges.customize.<id>`).
-Both existing badge group/permission eligibility and customization permission
-must pass. Standard badges remain read-only. Cosmeticum also requires the
-`cosmeticum.badges.customize` menu permission, which defaults to denied.
+Lists include assigned badges even when customization is unavailable. Editing
+requires `customizable: true`, the existing group/permission conditions, and an
+explicit per-badge permission. `customizePermission` overrides the caller's
+default; otherwise the standalone default is `enchatticus.badges.customize.<id>`.
+Undefined permissions deny customization. API consumers may supply their own
+permission node without embedding their namespace in Enchatticus.

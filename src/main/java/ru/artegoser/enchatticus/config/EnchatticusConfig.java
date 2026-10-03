@@ -82,9 +82,9 @@ public final class EnchatticusConfig {
 
         public boolean showInChat = true;
         public boolean showInTab = true;
-        /** Explicit opt-in to Cosmeticum player controls. Standard badges stay read-only. */
+        /** Explicit opt-in to player customization. Standard badges stay read-only. */
         public boolean customizable = false;
-        /** Empty uses cosmeticum.badges.customize.<id>. Undefined permission denies customization. */
+        /** Empty uses the caller's default permission. Undefined permission denies customization. */
         public String customizePermission = "";
     }
 
