@@ -7,14 +7,16 @@ import ru.artegoser.enchatticus.Enchatticus;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
 public final class ConfigManager {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private final Path path = FabricLoader.getInstance().getConfigDir().resolve("enchatticus.json");
+    private final Path path;
+
+    public ConfigManager() { this(FabricLoader.getInstance().getConfigDir().resolve("enchatticus.json")); }
+    public ConfigManager(Path path) { this.path = path; }
 
     private volatile EnchatticusConfig config = new EnchatticusConfig();
 
@@ -47,9 +49,15 @@ public final class ConfigManager {
     }
 
     public synchronized void save() throws IOException {
-        try (Writer writer = Files.newBufferedWriter(path)) {
-            GSON.toJson(config, writer);
-        }
+        AtomicConfigWriter.write(path, GSON.toJson(config));
+    }
+
+    /** Publish only after durable persistence; failed edits keep the previous runtime config. */
+    public synchronized void editBadges(java.util.function.Consumer<java.util.List<EnchatticusConfig.Badge>> edit) throws IOException {
+        EnchatticusConfig next = GSON.fromJson(GSON.toJson(config), EnchatticusConfig.class);
+        edit.accept(next.badges);
+        AtomicConfigWriter.write(path, GSON.toJson(next));
+        config = next;
     }
 
     public Path path() {

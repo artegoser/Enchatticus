@@ -24,12 +24,13 @@ public final class BadgeService {
             if (!isActive(player, badge)) {
                 continue;
             }
+            if (!tab && !BadgeManagement.visibleInChat(player, badge.id)) continue;
             root.append(renderBadge(player, badge));
         }
         return root;
     }
 
-    private static boolean isActive(ServerPlayer player, EnchatticusConfig.Badge badge) {
+    public static boolean isActive(ServerPlayer player, EnchatticusConfig.Badge badge) {
         boolean hasGroupCondition = !badge.group.isBlank();
         boolean hasPermissionCondition = !badge.permission.isBlank();
 

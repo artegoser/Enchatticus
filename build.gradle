@@ -24,6 +24,8 @@ loom {
 }
 
 dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.13.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.13.4'
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
@@ -83,3 +85,5 @@ publishing {
 		// retrieving dependencies.
 	}
 }
+
+tasks.withType(Test).configureEach { useJUnitPlatform() }

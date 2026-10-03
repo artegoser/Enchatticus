@@ -171,3 +171,12 @@ Requires Java 25 and Fabric Loader 0.19.3 or newer.
 ```
 
 The remapped JAR is written to `build/libs/`.
+
+## Cosmeticum integration
+
+Enchatticus retains chat formatting, channels, LuckPerms eligibility, badge
+rendering and TAB configuration. Optional `enchatticus:badges` API allows
+Cosmeticum to edit chat badge definitions and filter chat visibility per player.
+The visibility filter never affects TAB. Existing badges keep `showInTab`;
+new badges created through this API default to chat-only. Configuration edits
+are atomic and published to the running server only after persistence succeeds.

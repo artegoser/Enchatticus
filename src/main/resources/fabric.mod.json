@@ -13,6 +13,9 @@
   "entrypoints": {
     "main": [
       "ru.artegoser.enchatticus.Enchatticus"
+    ],
+    "enchatticus:badges": [
+      "ru.artegoser.enchatticus.badge.BadgeManagement"
     ]
   },
   "depends": {
