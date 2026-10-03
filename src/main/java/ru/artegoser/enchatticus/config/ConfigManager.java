@@ -103,6 +103,7 @@ public final class ConfigManager {
             if (badge.permission == null) badge.permission = "";
             if (badge.clickCommand == null) badge.clickCommand = "";
             if (badge.clickAction == null) badge.clickAction = "suggest";
+            if (badge.customizePermission == null) badge.customizePermission = "";
         }
         return value;
     }

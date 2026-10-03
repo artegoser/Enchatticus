@@ -175,8 +175,14 @@ The remapped JAR is written to `build/libs/`.
 ## Cosmeticum integration
 
 Enchatticus retains chat formatting, channels, LuckPerms eligibility, badge
-rendering and TAB configuration. Optional `enchatticus:badges` API allows
+rendering and TAB configuration. Optional `enchatticus:badges_v2` API allows
 Cosmeticum to edit chat badge definitions and filter chat visibility per player.
 The visibility filter never affects TAB. Existing badges keep `showInTab`;
 new badges created through this API default to chat-only. Configuration edits
 are atomic and published to the running server only after persistence succeeds.
+
+Player controls are opt-in per badge: set `customizable: true` and grant the
+configured `customizePermission` (empty uses `cosmeticum.badges.customize.<id>`).
+Both existing badge group/permission eligibility and customization permission
+must pass. Standard badges remain read-only. Cosmeticum also requires the
+`cosmeticum.badges.customize` menu permission, which defaults to denied.

@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerPlayer;
 import ru.artegoser.enchatticus.Enchatticus;
 import ru.artegoser.enchatticus.config.ConfigManager;
 import ru.artegoser.enchatticus.config.EnchatticusConfig;
+import ru.artegoser.enchatticus.integration.LuckPermsBridge;
 
 /** Optional Fabric entrypoint for consumers. Permission checks for editing belong to the caller. */
 public final class BadgeManagement {
@@ -18,11 +19,15 @@ public final class BadgeManagement {
     }
     public boolean eligible(ServerPlayer player, String id) {
         return Enchatticus.configManager().get().badges.stream().anyMatch(badge ->
-                badge.id.equals(id) && badge.showInChat && BadgeService.isActive(player, badge));
+                badge.id.equals(id) && customizable(player, badge));
+    }
+    private static boolean customizable(ServerPlayer player, EnchatticusConfig.Badge badge) {
+        return BadgeCustomizationPolicy.permits(badge, () -> BadgeService.isActive(player, badge),
+                permission -> LuckPermsBridge.hasPermission(player, permission, false));
     }
     public List<BadgeDefinition> list(ServerPlayer player, boolean administrative) {
         return Enchatticus.configManager().get().badges.stream()
-                .filter(badge -> administrative || badge.showInChat && BadgeService.isActive(player, badge))
+                .filter(badge -> administrative || customizable(player, badge))
                 .map(BadgeManagement::definition).toList();
     }
     public void upsert(BadgeDefinition definition) throws IOException {
@@ -42,6 +47,7 @@ public final class BadgeManagement {
             badge.group = definition.group(); badge.permission = definition.permission();
             badge.clickCommand = definition.clickCommand(); badge.clickAction = definition.clickAction();
             badge.showInChat = definition.showInChat();
+            badge.customizable = definition.customizable(); badge.customizePermission = definition.customizePermission();
         });
     }
     public void disableChat(String id) throws IOException {
@@ -50,6 +56,6 @@ public final class BadgeManagement {
     }
     private static BadgeDefinition definition(EnchatticusConfig.Badge badge) {
         return new BadgeDefinition(badge.id, badge.text, badge.hover, badge.group, badge.permission,
-                badge.clickCommand, badge.clickAction, badge.showInChat);
+                badge.clickCommand, badge.clickAction, badge.showInChat, badge.customizable, badge.customizePermission);
     }
 }

@@ -37,9 +37,9 @@ class BadgeManagementTest {
         String previous = Files.readString(manager.path());
         assertThrows(IllegalArgumentException.class, () -> BadgeManagement.upsert(manager, badge("../bad", "bad")));
         assertEquals(previous, Files.readString(manager.path()));
-        assertThrows(IllegalArgumentException.class, () -> new BadgeDefinition("good", "x".repeat(513), "", "", "", "", "run", true).validate());
+        assertThrows(IllegalArgumentException.class, () -> new BadgeDefinition("good", "x".repeat(513), "", "", "", "", "run", true, false, "").validate());
     }
     private static BadgeDefinition badge(String id, String text) {
-        return new BadgeDefinition(id, text, "", "", "", "", "suggest", true);
+        return new BadgeDefinition(id, text, "", "", "", "", "suggest", true, false, "");
     }
 }

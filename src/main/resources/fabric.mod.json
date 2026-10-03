@@ -14,7 +14,7 @@
     "main": [
       "ru.artegoser.enchatticus.Enchatticus"
     ],
-    "enchatticus:badges": [
+    "enchatticus:badges_v2": [
       "ru.artegoser.enchatticus.badge.BadgeManagement"
     ]
   },
